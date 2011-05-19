@@ -3,14 +3,14 @@ class Ability
 
   def initialize(user)
     can :update, Comment do |comment|
-      comment.user_id == user.id and
-        Time.now < 15.minutes.since(comment.created_at)
+      comment.project.admin?(user) or (comment.user_id == user.id and
+        Time.now < 365.days.since(comment.created_at) )
     end
     
     can :destroy, Comment do |comment|
       comment.project.admin?(user) or
         ( comment.user_id == user.id and
-          Time.now < 15.minutes.since(comment.created_at) )
+          Time.now < 365.days.since(comment.created_at) )
     end
     
     can :comment, [Task, Conversation] do |object, project|
